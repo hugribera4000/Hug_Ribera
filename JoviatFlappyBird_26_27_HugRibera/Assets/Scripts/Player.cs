@@ -141,10 +141,26 @@ public class Player : MonoBehaviour
 
     private static bool WasFlapPressed()
     {
-        return (Keyboard.current != null &&
-                (Keyboard.current.spaceKey.wasPressedThisFrame || Keyboard.current.upArrowKey.wasPressedThisFrame)) ||
-               (Mouse.current != null &&
-                Mouse.current.leftButton.wasPressedThisFrame &&
-                (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject()));
+        if (Keyboard.current != null &&
+            (Keyboard.current.spaceKey.wasPressedThisFrame || Keyboard.current.upArrowKey.wasPressedThisFrame))
+        {
+            return true;
+        }
+
+        if (Mouse.current != null &&
+            Mouse.current.leftButton.wasPressedThisFrame &&
+            (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject()))
+        {
+            return true;
+        }
+
+        Touchscreen touchscreen = Touchscreen.current;
+        if (touchscreen == null || !touchscreen.primaryTouch.press.wasPressedThisFrame)
+        {
+            return false;
+        }
+
+        return EventSystem.current == null ||
+               !EventSystem.current.IsPointerOverGameObject(touchscreen.primaryTouch.touchId.ReadValue());
     }
 }
