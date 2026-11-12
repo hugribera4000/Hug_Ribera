@@ -610,6 +610,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adf72e64cfb7541ba83569c59b5d222f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  wingClip: {fileID: 8300000, guid: 00b1f34b1a33d0140bcf74c6766a4f1f, type: 3}
+  hitClip: {fileID: 8300000, guid: 97a550369a2461d4785414201acdeb8d, type: 3}
+  pointClip: {fileID: 8300000, guid: ab29cfa5a17485f4483700d798724129, type: 3}
+  dieClip: {fileID: 8300000, guid: 97f5d7c17bb069b4c9d621846597a0b2, type: 3}
+  swooshingClip: {fileID: 8300000, guid: ac447f037142df54794adbd0e1753141, type: 3}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -890,6 +895,10 @@ MonoBehaviour:
   - {fileID: -9063101379179899830, guid: 383151b88b046f54087dcf6d8c8accf7, type: 3}
   - {fileID: -8349267519408472555, guid: e8aa21bef80e2a84cb946ca395325813, type: 3}
   - {fileID: 8952661165725350425, guid: 109d03c5e9c3ea9489393cc348c93b44, type: 3}
+  hitFrames:
+  - {fileID: -4587758691429324152, guid: 3e8b91d7770c16a449dd19e48a4ea106, type: 3}
+  - {fileID: 8367838668530597329, guid: 470f863c7ec3dc8498a5e2f96fb78adf, type: 3}
+  hitFrameDuration: 0.15
 --- !u!50 &884613788
 Rigidbody2D:
   serializedVersion: 5
@@ -1570,6 +1579,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2000001001}
   - component: {fileID: 2000001002}
+  - component: {fileID: 2000001003}
   m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
@@ -1652,6 +1662,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!114 &2000001003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2000001000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3de1aeb66f964f44a1ea1dfbb47fa22d, type: 3}
+  m_Name: ""
+  m_EditorClassIdentifier: Assembly-CSharp::BackgroundScroller
+  scrollSpeed: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

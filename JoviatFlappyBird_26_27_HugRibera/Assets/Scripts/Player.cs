@@ -1,16 +1,21 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 public class Player : MonoBehaviour
 {
     [SerializeField] private float flapForce = 5f;
     [SerializeField] private float gravityScale = 1.5f;
     [SerializeField] private Sprite[] flapFrames;
+    [SerializeField] private Sprite[] hitFrames;
+    [SerializeField] private float hitFrameDuration = 0.15f;
 
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
     private Vector3 startingPosition;
     private Sprite startingSprite;
+    private bool isPlayingHitAnimation;
+    private float hitAnimationTime;
 
     private void Awake()
     {
@@ -39,7 +44,19 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.Instance != null && GameManager.Instance.IsPlaying &&
+        if (isPlayingHitAnimation && spriteRenderer != null && hitFrames != null && hitFrames.Length > 0)
+        {
+            hitAnimationTime += Time.deltaTime;
+            int frame = Mathf.FloorToInt(hitAnimationTime / Mathf.Max(hitFrameDuration, 0.01f));
+            if (frame >= hitFrames.Length)
+            {
+                frame = hitFrames.Length - 1;
+                isPlayingHitAnimation = false;
+            }
+
+            spriteRenderer.sprite = hitFrames[frame];
+        }
+        else if (GameManager.Instance != null && GameManager.Instance.IsPlaying &&
             spriteRenderer != null && flapFrames != null && flapFrames.Length > 0)
         {
             int frame = Mathf.FloorToInt(Time.time * 12f) % flapFrames.Length;
@@ -60,6 +77,7 @@ public class Player : MonoBehaviour
         rb.gravityScale = gravityScale;
         rb.linearVelocity = Vector2.zero;
         rb.AddForce(Vector2.up * flapForce, ForceMode2D.Impulse);
+        gameManager.PlayFlapSound();
     }
 
     private void FixedUpdate()
@@ -80,16 +98,33 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (GameManager.Instance != null)
+        if (GameManager.Instance != null && GameManager.Instance.IsPlaying)
         {
+            PlayHitAnimation();
+            GameManager.Instance.PlayHitSound();
             GameManager.Instance.GameOver();
         }
+    }
+
+    private void PlayHitAnimation()
+    {
+        if (spriteRenderer == null || hitFrames == null || hitFrames.Length == 0)
+        {
+            Debug.LogError("Player needs hit frames assigned to play its collision animation.", this);
+            return;
+        }
+
+        isPlayingHitAnimation = true;
+        hitAnimationTime = 0f;
+        spriteRenderer.sprite = hitFrames[0];
     }
 
     public void ResetBird()
     {
         transform.position = startingPosition;
         transform.rotation = Quaternion.identity;
+        isPlayingHitAnimation = false;
+        hitAnimationTime = 0f;
 
         if (rb != null)
         {
@@ -108,6 +143,8 @@ public class Player : MonoBehaviour
     {
         return (Keyboard.current != null &&
                 (Keyboard.current.spaceKey.wasPressedThisFrame || Keyboard.current.upArrowKey.wasPressedThisFrame)) ||
-               (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame);
+               (Mouse.current != null &&
+                Mouse.current.leftButton.wasPressedThisFrame &&
+                (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject()));
     }
 }
